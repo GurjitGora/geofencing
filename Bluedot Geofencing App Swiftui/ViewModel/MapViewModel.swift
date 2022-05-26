@@ -9,6 +9,7 @@ import CoreLocation
 import MapKit
 import SwiftUI
 
+// map defaults
 enum mapDefaults {
     static let initialLocation = CLLocationCoordinate2D(latitude: 37.5, longitude: -122.011033)
     static let initialSpan = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
@@ -32,6 +33,7 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
     
     var locationMangager: CLLocationManager?
     
+    // check if location permission is enabled or not
     func checkLocationEnabled() {
         if CLLocationManager.locationServicesEnabled() {
             locationMangager = CLLocationManager()
@@ -44,9 +46,9 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
             print("Location permission not enabled")
         }
     }
-   
-   // Check if user authorized location
-   private func checkLocationAuth() {
+    
+    // Check if user authorized location
+    private func checkLocationAuth() {
         guard let locationMangager = locationMangager else {
             return
         }
@@ -96,21 +98,21 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
     
     // create user notification
     func triggerLocalNotification(subTitle: String, body: String){
-                // configure notification content
-                let content = UNMutableNotificationContent()
-                content.title = "Alert!"
-                content.subtitle = subTitle
-                content.body = body
-                content.sound = UNNotificationSound.default
-                
-                // setup trigger
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-                
-                // create request
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-                
-                // add notification request
-                UNUserNotificationCenter.current().add(request)
+        // configure notification content
+        let content = UNMutableNotificationContent()
+        content.title = "Alert!"
+        content.subtitle = subTitle
+        content.body = body
+        content.sound = UNNotificationSound.default
+        
+        // setup trigger
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        
+        // create request
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        
+        // add notification request
+        UNUserNotificationCenter.current().add(request)
     }
 }
 

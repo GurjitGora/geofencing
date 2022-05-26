@@ -5,10 +5,9 @@ import CoreLocationUI
 struct MapView: View {
     
     @StateObject private var mapViewModel = MapViewModel()
-        
+    
     var body: some View {
         ZStack {
-
             Map(coordinateRegion: $mapViewModel.region,
                 interactionModes: .all,
                 showsUserLocation: true
@@ -20,7 +19,6 @@ struct MapView: View {
                 Circle()
                     .strokeBorder(Color.green,lineWidth: 4)
                     .frame(width: 44, height: 44) // just drawn circle on center of the screen not onto region radius
-                  
             )
         }
     }
