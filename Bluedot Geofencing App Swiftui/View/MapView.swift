@@ -8,18 +8,24 @@ struct MapView: View {
     
     var body: some View {
         ZStack {
+//            Map(coordinateRegion: $mapViewModel.region,
+//                interactionModes: .all,
+//                showsUserLocation: true,
+//            )
             Map(coordinateRegion: $mapViewModel.region,
                 interactionModes: .all,
-                showsUserLocation: true
-            )
+                showsUserLocation: true,
+                annotationItems: mapViewModel.locations) { location in
+                MapAnnotation(coordinate: mapViewModel.locations.first!.coordinate) {
+                        Circle()
+                            .stroke(.red, lineWidth: 3)
+                            .frame(width: 44, height: 44)
+                    }
+            }
             .ignoresSafeArea()
             .accentColor(.teal)
             .onAppear(perform: mapViewModel.checkLocationEnabled)
-            .overlay(
-                Circle()
-                    .strokeBorder(Color.green,lineWidth: 4)
-                    .frame(width: 44, height: 44) // just drawn circle on center of the screen not onto region radius
-            )
+
         }
     }
 }

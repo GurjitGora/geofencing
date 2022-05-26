@@ -11,11 +11,11 @@ import SwiftUI
 
 // map defaults
 enum mapDefaults {
-    static let initialLocation = CLLocationCoordinate2D(latitude: 37.5, longitude: -122.011033)
+    static let initialLocation = CLLocationCoordinate2D(latitude: 37.334928, longitude: -122.011033)
     static let initialSpan = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
 }
 
-final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate {
+final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate, MKMapViewDelegate {
     
     @Published private(set) var authorizationStatus: UNAuthorizationStatus?
     
@@ -23,6 +23,10 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
         center: mapDefaults.initialLocation,
         span: mapDefaults.initialSpan)
     
+    // draw circle on map
+     let locations = [
+        Location(name: "Safearea", coordinate: mapDefaults.initialLocation)
+    ]
     
     // Create Geofence Region with 10 meter radius
     let geofenceRegion = CLCircularRegion(center: mapDefaults.initialLocation,
@@ -114,5 +118,13 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
         // add notification request
         UNUserNotificationCenter.current().add(request)
     }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+         if let tileOverlay = overlay as? MKTileOverlay {
+           let renderer = MKTileOverlayRenderer(overlay: tileOverlay)
+           return renderer
+         }
+         return MKOverlayRenderer()
+       }
 }
 
