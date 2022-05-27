@@ -16,18 +16,32 @@ enum mapDefaults {
     static let initialSpan = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
 }
 
-class Bluedot_Geofencing_App_SwiftuiTests: XCTestCase {
+class Bluedot_Geofencing_App_SwiftuiTests: XCTestCase, CLLocationManagerDelegate {
     
     var mapViewModel = MapViewModel()
+    var locationMangager: CLLocationManager?
 
-
-    func bluedot_geofence_unit_test() throws {
+    func testbluedot_geofence_unit() throws {
         // given
         let geofenceRegion = CLCircularRegion(center: mapDefaults.initialLocation,
                                               radius: 10,
                                               identifier: "SafeArea")
         // then
-        XCTAssert(geofenceRegion.contains(mapViewModel.geofenceRegion.center))
+        XCTAssert(geofenceRegion.contains(mapDefaults.initialLocation))
+    }
+    
+    func test_check_auth_status(){
+        locationMangager?.delegate = self
+        locationMangager?.requestLocation()
+        
+        switch locationMangager?.authorizationStatus{
+            
+        case .none:
+            XCTAssert(true)
+        case .some(_):
+            XCTAssert(false)
+        }   
+        
     }
 
 }

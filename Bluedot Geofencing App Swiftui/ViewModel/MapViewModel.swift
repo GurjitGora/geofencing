@@ -11,8 +11,8 @@ import SwiftUI
 
 // map defaults
 enum mapDefaults {
-    static let initialLocation = CLLocationCoordinate2D(latitude: 37.334928, longitude: -122.011033)
-    static let initialSpan = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+    static let initialLocation = CLLocationCoordinate2D(latitude: -37.81785423438109, longitude:  144.97973738630145)
+    static let initialSpan = MKCoordinateSpan(latitudeDelta:0.01, longitudeDelta:0.01)
 }
 
 final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate, MKMapViewDelegate {
@@ -22,6 +22,14 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
     @Published var region: MKCoordinateRegion = MKCoordinateRegion(
         center: mapDefaults.initialLocation,
         span: mapDefaults.initialSpan)
+    
+    var userLatitude = CLLocationCoordinate2D().latitude
+    var userLongitude = CLLocationCoordinate2D().longitude
+    
+    var initialCoordinate : CLLocationCoordinate2D?
+    var movedCoordinate : CLLocationCoordinate2D?
+    
+    @Published var distanceInMeter : Double = 0.0
     
     // draw circle on map
      let locations = [
@@ -37,6 +45,7 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
     
     var locationMangager: CLLocationManager?
     
+    
     // check if location permission is enabled or not
     func checkLocationEnabled() {
         if CLLocationManager.locationServicesEnabled() {
@@ -50,7 +59,6 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
             print("Location permission not enabled")
         }
     }
-    
     // Check if user authorized location
     private func checkLocationAuth() {
         guard let locationMangager = locationMangager else {
@@ -81,14 +89,30 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
         requestAuthorization()
     }
     
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        let location = locations.last
+        
+        userLatitude = location!.coordinate.latitude
+        userLongitude = location!.coordinate.longitude
+        
+        // Starting position
+        initialCoordinate = CLLocationCoordinate2D(latitude: userLatitude , longitude: userLongitude)
+        // Updated position
+        movedCoordinate = CLLocationCoordinate2D(latitude: location!.coordinate.latitude , longitude: location!.coordinate.longitude)
+        self.distanceInMeter = Double(movedCoordinate!.distance(to: initialCoordinate!))
+        print(distanceInMeter)
+    }
+  
+    
     // enter safe area (region)
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        triggerLocalNotification(subTitle: "Entering Safe Area", body: "You entered inside the safe area, don't leave if not urgent be safe mate")
+        triggerLocalNotification(subTitle: "User Entered", body: "You have moved inside safe area")
     }
     
     // exiting safe area (region)
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        triggerLocalNotification(subTitle: "Exiting Safe Area", body: "Are you sure you want to exit the comfy safe area? Think about it or go back!")
+        triggerLocalNotification(subTitle: "User Exited", body: "You have moved from safe area")
     }
     
     // request for notification
@@ -125,6 +149,15 @@ final class MapViewModel : NSObject, ObservableObject, CLLocationManagerDelegate
            return renderer
          }
          return MKOverlayRenderer()
-       }
+    }
 }
 
+// return distance in meters
+extension CLLocationCoordinate2D {
+    
+    /// Returns the distance between two coordinates in meters.
+    func distance(to: CLLocationCoordinate2D) -> CLLocationDistance {
+        MKMapPoint(self).distance(to: MKMapPoint(to))
+    }
+    
+}
