@@ -1,7 +1,7 @@
 # Geofencing using CoreLocation and Mapkit
 > Built using SwiftUI 5.6
 
-##How to Run
+## How to Run
 **The project uses a custom location**
 > latitude: -37.81785423438109, longitude:  144.97973738630145
 **The geofence region is set to these coordinates and the custome device location should also refer to the same.**
